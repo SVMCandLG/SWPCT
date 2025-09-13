@@ -1,0 +1,101 @@
+#include <bits/stdc++.h>
+#define int int64_t
+#define MAXRC 150
+#define pi pair<int, int>
+#define pii pair<int, pi>
+using namespace std;
+
+int R, C;
+char ip[MAXRC][MAXRC];
+int distant[10][10];
+vector<pi> toado;
+int dx[4] = {0, 0, 1, -1};
+int dy[4] = {1, -1, 0, 0};
+
+void BFS(int start) {
+    vector<vector<bool>> isVisited = vector<vector<bool>>(R, vector<bool>(C, false));
+    queue<pii> q;
+    q.push({0, toado[start]});
+    isVisited[toado[start].first][toado[start].second] = true;
+    
+    while (!q.empty()) {
+        int dt = q.front().first;
+        int curR = q.front().second.first;
+        int curC = q.front().second.second;
+        q.pop();
+        if (ip[curR][curC] == 'S') {
+            // cout << "kc tu " << start << " den S la: " << dt << endl;
+            distant[start][0] = dt;
+        } else if ('0' < ip[curR][curC] && ip[curR][curC] <= '9') {
+            // cout << "kc tu " << start << " den " << ip[curR][curC] << " la: " << dt << endl;
+            distant[start][ip[curR][curC] - '0'] = dt;
+        }
+        
+        for (int i = 0; i < 4; i++) {
+            int rr = curR + dx[i];
+            int cc = curC + dy[i];
+            if (rr < 0 || rr >= R || cc < 0 || cc >= C) continue;
+            if (!isVisited[rr][cc] && ip[rr][cc] != '*') {
+                isVisited[rr][cc] = true;
+                q.push({dt+1, {rr, cc}});
+            }
+        }
+    }
+}
+
+int tinhkc (vector<int>& hoanvi) {
+    int kc = distant[0][hoanvi[0]];
+    for (int i = 1; i < hoanvi.size(); i++) {
+        kc += distant[hoanvi[i-1]][hoanvi[i]];
+    }
+    kc += distant[hoanvi.back()][0];
+    return kc;
+}
+
+int32_t main() {
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    toado = vector<pi>(10, {-1, -1});
+    cin >> R >> C;
+    for (int i = 0; i < R; i++) {
+        for (int j = 0; j < C; j++) {
+            cin >> ip[i][j];
+            if (ip[i][j] == 'S') {
+                toado[0] = {i, j};
+            } else if ('0' < ip[i][j] && ip[i][j] <= '9') {
+                toado[ip[i][j] - '0'] = {i, j};
+            }
+        }
+    }
+    
+    int sothanhpho = 0;
+    for (int i = 0; i < toado.size(); i++) {
+        if (toado[i].first != -1) {
+            // cout << "BFS for " << i << endl;
+            BFS(i);
+            sothanhpho++;
+        }
+    }
+    sothanhpho--;
+    
+    // for (int i = 0; i < 10; i++) {
+    //     for (int j = 0; j < 10; j++) {
+    //         cout << distant[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
+    
+    // cout << sothanhpho << endl;
+    vector<int> hoanvi;
+    for (int i = 1; i <= sothanhpho; i++)
+        hoanvi.push_back(i);
+    int minVal = INT64_MAX;
+    do {
+        int tmp = tinhkc(hoanvi);
+        // for (int& x : hoanvi) cout << x << " ";
+        // cout << tmp << endl;
+        minVal = min(tmp, minVal);
+    } while (next_permutation(hoanvi.begin(), hoanvi.end()));
+    cout << minVal << endl;
+    
+    return 0;
+}
