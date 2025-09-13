@@ -1,0 +1,100 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int int64_t
+#define MAXN 105
+#define pi pair<int, int>
+#define pii pair<pi, int>
+
+int N;
+char ip[MAXN][MAXN];
+pi R, G, B; //so vung, tong dien tich
+vector<pi> toadoR, toadoG, toadoB;
+vector<vector<bool>> isVisit;
+int dx[4] = {0, 0, 1, -1};
+int dy[4] = {1, -1, 0, 0};
+
+void BFS(pi& start, char c) {
+    queue<pi> q;
+    q.push(start);
+    isVisit[start.first][start.second] = true;
+    while (!q.empty()) {
+        pi cur = q.front(); q.pop();
+        for (int i = 0; i < 4; i++) {
+            int rr = cur.first + dx[i];
+            int cc = cur.second + dy[i];
+            if (rr < 0 || rr >= N || cc < 0 || cc >= N) continue;
+            if (!isVisit[rr][cc] && ip[rr][cc] == c) {
+                isVisit[rr][cc] = true;
+                q.push({rr, cc});
+            }
+        }
+    }
+}
+
+int32_t main() {
+	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        string s;
+        cin >> s;
+        for (int j = 0; j < N; j++) {
+            ip[i][j] = s[j];
+            if (s[j] == 'R') {
+                R.second += 1;
+                toadoR.push_back({i, j});
+            } else if (s[j] == 'G') {
+                G.second += 1;
+                toadoG.push_back({i, j});
+            } else {
+                B.second += 1;
+                toadoB.push_back({i, j});
+            }
+        }
+    }
+    
+    // cout << "R: " << R.first << ", " << R.second << endl;
+    // cout << "G: " << G.first << ", " << G.second << endl;
+    // cout << "B: " << R.first << ", " << B.second << endl;
+    
+    isVisit = vector<vector<bool>>(N, vector<bool>(N, false));
+    //bfs cho R
+    for (pi& x: toadoR) {
+        if (isVisit[x.first][x.second]) continue;
+        BFS(x, 'R');
+        R.first++;
+    }
+    //bfs cho G
+    for (pi& x: toadoG) {
+        if (isVisit[x.first][x.second]) continue;
+        BFS(x, 'G');
+        G.first++;
+    }
+	//BFS cho B
+    for (pi& x: toadoB) {
+        if (isVisit[x.first][x.second]) continue;
+        BFS(x, 'B');
+        B.first++;
+    }
+    // cout << "R: " << R.first << ", " << R.second << endl;
+    // cout << "G: " << G.first << ", " << G.second << endl;
+    // cout << "B: " << R.first << ", " << B.second << endl;
+    //lay ket qua
+    vector<pii> v;
+    v.push_back({R, 'R'});
+    v.push_back({G, 'G'});
+    v.push_back({B, 'B'});
+    sort(v.begin(), v.end(), [&](pii& a, pii& b) {
+        if (a.first.first != b.first.first) {
+            return a.first.first > b.first.first;
+        }
+        if (a.first.second != b.first.second) {
+            return a.first.second > b.first.second;
+        }
+        return a.second > b.second;
+    });
+    // for (pii& x: v) {
+    //     cout << x.first.first << " " << x.first.second << " " << char(x.second) << endl;
+    // }
+    cout << char(v[0].second) << " " << v[0].first.first << endl;
+	return 0;
+}
