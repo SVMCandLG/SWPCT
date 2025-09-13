@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define MAXN 160
+
+int N;
+int ip[MAXN][MAXN];
+
+int main() {
+	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin >> N;
+    int tongmang = 0;
+    int maxSum = 0;
+    for (int i = 0; i < N; i++) {
+        int tonghang = 0;
+        for (int j = 0; j < N; j++) {
+            cin >> ip[i][j];
+            tonghang += ip[i][j];
+        }
+        tongmang += tonghang;
+        maxSum = max(maxSum, tonghang);
+    }
+
+    for (int c = 0; c < N; c++) {
+        int tongcot = 0;
+        for (int r = 0; r < N; r++) {
+            tongcot += ip[r][c];
+        }
+        maxSum = max(maxSum, tongcot);
+    }
+
+    cout << (N * maxSum - tongmang) << endl;
+	return 0;
+}
